@@ -1,28 +1,40 @@
-// #include <SoftwareSerial.h>
-// SoftwareSerial mySerial(10, 11); // RX TX
-
-#ifndef bitRead
-#define bitRead(value, bit) (((value) >> (bit)) & 0x01)
-#define bitSet(value, bit) ((value) |= (1UL << (bit)))
-#define bitClear(value, bit) ((value) &= ~(1UL << (bit)))
-#define bitWrite(value, bit, bitvalue) (bitvalue ? bitSet(value, bit) : bitClear(value, bit))
-#endif
-
 byte z0, z1, z2, z3;
 byte x0, x1, x2, x3, x4;
 byte d0, d1, d2, d3;
 byte intra = 1, inter = 7;
 String hexval;
+int count;
 
-// TODO: melkkoffie, twee koffie, twee espressi
-// TODO: make this an array and iterate all functions over it
-int t_koffie, t_ristretto, t_cappuccino, t_espresso, t_latte_macchiato, t_macchiato;
-int o_koffie, o_ristretto, o_cappuccino, o_espresso, o_latte_macchiato, o_macchiato;
+const char *recipeNames[] = {
+    "espresso",     "ristretto",    "coffee",       "cappuccino",       "latte_macchiato",      "macchiato",    "milkcoffee",       "frothed_milk",
+    "espresso-x2",  "ristretto-x2", "coffee-x2",    "cappuccino-x2",    "latte_macchiato-x2",   "macchiato-x2", "milkcoffee-x2",    "frothed_milk-x2"
+};
+
+// Recipe Memory Address, Previous Count, New Count
+int recipes[][3] = {
+    {0x280, 0, 0},  {0x281, 0, 0},  {0x282, 0, 0},  {0x284, 0, 0},      {0x285, 0, 0},          {0x286, 0, 0},  {0x288, 0, 0},      {0x289, 0, 0},
+    {0x291, 0, 0},  {0x292, 0, 0},  {0x293, 0, 0},  {0x295, 0, 0},      {0x296, 0, 0},          {0x297, 0, 0},  {0x299, 0, 0},      {0x29A, 0, 0}
+};
 
 void setup() {
-  Serial.begin(9600);
   Serial1.begin(9600);
-  Serial.println("Starting Q42 coffeehacker");
+}
+
+void loop() {
+  
+  for (int i=0; i < sizeof(recipes)/sizeof(recipes[0]); i++) {
+  	// Set New count;
+  	recipes[i][2] = getCounter(recipes[i][0]);
+  	// If New Count equal to Previous Count + 1, call Webhook
+  	if (recipes[i][2] == recipes[i][1] + 1) callWebhook(recipeNames[i]);
+  }
+
+  delay(3 * 1000);
+}
+
+void callWebhook(String recipe)
+{
+  Particle.publish("coffeemaker/makecoffee", recipe, 60, PRIVATE);
 }
 
 int getCounter(int offset)
@@ -60,45 +72,6 @@ int getCounter(int offset)
   } else {
     return -1;
   }
-}
-
-void loop() {
-  o_koffie = t_koffie;
-  o_ristretto = t_ristretto;
-  o_cappuccino = t_cappuccino;
-  o_espresso = t_espresso;
-  o_latte_macchiato = t_latte_macchiato;
-  o_macchiato = t_macchiato;
-
-  Serial.println("------ reading values");
-  t_koffie = getCounter(0x282);
-  t_ristretto = getCounter(0x281);
-  t_cappuccino = getCounter(0x284);
-  t_espresso = getCounter(0x280);
-  t_latte_macchiato = getCounter(0x285);
-  t_macchiato = getCounter(0x286);
-
-  Serial.print("koffie:.........."); Serial.println(t_koffie);
-  Serial.print("cappuccino:......"); Serial.println(t_cappuccino);
-  Serial.print("espresso:........"); Serial.println(t_espresso);
-  Serial.print("ristretto:......."); Serial.println(t_ristretto);
-  Serial.print("latte macchiato:."); Serial.println(t_latte_macchiato);
-  Serial.print("macchiato:......."); Serial.println(t_macchiato);
-
-  if(t_koffie == o_koffie + 1) trigger("koffie");
-  if(t_ristretto == o_ristretto + 1) trigger("ristretto");
-  if(t_cappuccino == o_cappuccino + 1) trigger("cappuccino");
-  if(t_espresso == o_espresso + 1) trigger("espresso");
-  if(t_latte_macchiato == o_latte_macchiato + 1) trigger("latte_macchiato");
-  if(t_macchiato == o_macchiato + 1) trigger("macchiato");
-
-  delay(5 * 1000);
-}
-
-void trigger(String ctype)
-{
-  Serial.println(" -- triggering webhook for a " + ctype);
-  Spark.publish("store-coffee", ctype, 60, PRIVATE);
 }
 
 byte fromCoffeemaker(byte x0, byte x1, byte x2, byte x3) {
