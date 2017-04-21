@@ -22,14 +22,16 @@ void setup() {
 
 void loop() {
   
-  for (int i=0; i < sizeof(recipes)/sizeof(recipes[0]); i++) {
-  	// Set New count;
-  	recipes[i][2] = getCounter(recipes[i][0]);
-  	// If New Count equal to Previous Count + 1, call Webhook
-  	if (recipes[i][2] == recipes[i][1] + 1) callWebhook(recipeNames[i]);
-  }
-
-  delay(3 * 1000);
+    for (int i=0; i < sizeof(recipes)/sizeof(recipes[0]); i++) {
+        // Set Previous New Count to Previous Count
+        recipes[i][1] = recipes[i][2];
+        // Set New count;
+        recipes[i][2] = getCounter(recipes[i][0]);
+        // If New Count equal to Previous Count + 1, call Webhook
+        if (recipes[i][2] == recipes[i][1] + 1) callWebhook(recipeNames[i]);
+    }
+    
+    delay(2 * 1000);
 }
 
 void callWebhook(String recipe)
