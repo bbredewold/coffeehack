@@ -27,16 +27,20 @@ void loop() {
         recipes[i][1] = recipes[i][2];
         // Set New count;
         recipes[i][2] = getCounter(recipes[i][0]);
-        // If New Count equal to Previous Count + 1, call Webhook
-        if (recipes[i][2] == recipes[i][1] + 1) callWebhook(recipeNames[i]);
+        // Check if recipe is greater then 0. Sometimes the 0 value will result in a -1.
+        if (recipes[i][1] > 0) {
+            // If New Count equal to Previous Count + 1, call Webhook
+            if (recipes[i][2] == recipes[i][1] + 1) callWebhook(recipeNames[i], recipes[i][1], recipes[i][2]);
+        }
     }
     
-    delay(2 * 1000);
+    delay(3 * 1000);
 }
 
-void callWebhook(String recipe)
+void callWebhook(String recipe, int countOld, int countNew)
 {
   Particle.publish("coffeemaker/makecoffee", recipe, 60, PRIVATE);
+  Particle.publish("coffeemaker/test/count", (String) countOld + " => " + (String) countNew , 60, PRIVATE);
 }
 
 int getCounter(int offset)
