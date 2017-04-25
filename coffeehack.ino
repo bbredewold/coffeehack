@@ -33,14 +33,13 @@ void loop() {
             if (recipes[i][2] == recipes[i][1] + 1) callWebhook(recipeNames[i], recipes[i][1], recipes[i][2]);
         }
     }
-    
+
     delay(3 * 1000);
 }
 
 void callWebhook(String recipe, int countOld, int countNew)
 {
   Particle.publish("coffeemaker/makecoffee", recipe, 60, PRIVATE);
-  Particle.publish("coffeemaker/test/count", (String) countOld + " => " + (String) countNew , 60, PRIVATE);
 }
 
 int getCounter(int offset)
