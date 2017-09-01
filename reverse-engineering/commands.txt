@@ -10,13 +10,17 @@ Date?                                   AN:0D - Doesn't work
 make product 1                          FA:01 - Ristretto (links onder + 1)
 make product 2                          FA:02 - Espresso (links onder + 2)
 make product 3                          FA:03 - Koffie (links onder + 3)
-make product 4                          FA:04
-make product 5                          FA:05
-make product 6                          FA:06
-make product 7                          FA:07
-make hot water                          FA:08
-make steam                              FA:09 - Melkschuim permanent
-flushing                                FA:0B - Melk permanent
+make product 4                          FA:04 - Cappuccino
+make product 5                          FA:05 - Melkkoffie
+make product 6                          FA:06 - Macchiato
+make product 7                          FA:07 - Latte Macchiato
+make hot water                          FA:08 - Portie Melkschuim
+make steam                              FA:09 - /// Melkschuim permanent
+flushing                                FA:0B - /// Melk permanent
+                                        FA:0C - Kannetje Koffie
+                                        FA:0D - Heet Water
+                                        FA:0E - Heet Water Permanent
+
 pump coffee on                          FN:01
 pump coffee off                         FN:02
 coffee heating on                       FN:03
