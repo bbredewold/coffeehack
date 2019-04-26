@@ -1,3 +1,10 @@
+#ifndef bitRead
+#define bitRead(value, bit) (((value) >> (bit)) & 0x01)
+#define bitSet(value, bit) ((value) |= (1UL << (bit)))
+#define bitClear(value, bit) ((value) &= ~(1UL << (bit)))
+#define bitWrite(value, bit, bitvalue) (bitvalue ? bitSet(value, bit) : bitClear(value, bit))
+#endif
+
 byte z0, z1, z2, z3;
 byte x0, x1, x2, x3, x4;
 byte d0, d1, d2, d3;
